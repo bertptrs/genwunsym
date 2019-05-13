@@ -6,3 +6,4 @@ authors = ["Bert Peters <bert@bertptrs.nl>"]
 edition = "2018"
 
 [dependencies]
+num-traits = "0.2.6"
