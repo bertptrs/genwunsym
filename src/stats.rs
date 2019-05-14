@@ -24,7 +24,7 @@ impl From<Stat> for usize {
             Special => 3,
             Speed => 4,
             Accuracy => 5,
-            Evasion => 6
+            Evasion => 6,
         }
     }
 }

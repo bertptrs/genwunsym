@@ -14,8 +14,7 @@ impl Pokemon {
     ///
     /// This computes the raw, unmodified stat based on the level,
     /// base stats, effort values and individual values of the pokemon.
-    pub fn get_stat(&self, stat: Stat) -> u16
-    {
+    pub fn get_stat(&self, stat: Stat) -> u16 {
         match stat {
             // Querying these doesn't make sense.
             Stat::Accuracy | Stat::Evasion => unimplemented!(),
@@ -30,11 +29,7 @@ impl Pokemon {
                 let s = s.min(63);
                 let s = s + 2 * (iv + bs);
 
-                let c_l = if stat == Stat::HP {
-                    l + 10
-                } else {
-                    5
-                };
+                let c_l = if stat == Stat::HP { l + 10 } else { 5 };
 
                 s * l / 100 + c_l
             }

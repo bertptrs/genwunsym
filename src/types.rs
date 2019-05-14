@@ -1,3 +1,6 @@
+use num::rational::Ratio;
+use num::traits::identities::{One, Zero};
+
 /// Pokémon or move type.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum Type {
@@ -29,6 +32,19 @@ pub enum Effectiveness {
     Weak,
     /// Target type resists the attack type.
     Resist,
+}
+
+impl Effectiveness {
+    pub fn get_modifier(self) -> Ratio<u16> {
+        use self::Effectiveness::*;
+
+        match self {
+            Neutral => Ratio::one(),
+            Immune => Ratio::zero(),
+            Weak => Ratio::from_integer(2),
+            Resist => Ratio::new(1, 2),
+        }
+    }
 }
 
 impl Type {

@@ -3,28 +3,29 @@ use std::num::NonZeroU8;
 use num::rational::Ratio;
 use rand::Rng;
 
-use crate::stats::Modifier;
+use crate::stats::{Modifier, StatSet};
 use crate::types::Type;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum MoveEffect {
     /// Normal, damaging move. The u8 is its power.
-    Damage(u8),
+    Normal,
     /// Move with recoil. Divider is the fraction of the damage that will be dealt as recoil.
-    Recoil { power: u8, divider: NonZeroU8 },
+    Recoil(NonZeroU8),
+    // Explosion or self-destruct
+    SelfKO,
 }
 
 const STRUGGLE: Move = Move {
+    power: unsafe { Some(NonZeroU8::new_unchecked(50)) },
     accuracy: unsafe { Some(NonZeroU8::new_unchecked(255)) },
-    effect: MoveEffect::Recoil {
-        power: 50,
-        divider: unsafe { NonZeroU8::new_unchecked(2) },
-    },
+    effect: unsafe { MoveEffect::Recoil(NonZeroU8::new_unchecked(2)) },
     move_type: Type::Normal,
 };
 
 /// A move a pokemon could use.
 pub struct Move {
+    power: Option<NonZeroU8>,
     /// Accuracy for the move on a 0..255 scale. None means move always hits.
     accuracy: Option<NonZeroU8>,
     effect: MoveEffect,
