@@ -73,5 +73,13 @@ mod tests {
             false,
             m.hits(&mut rng, Modifier::Neutral, Modifier::Neutral)
         );
+
+        // Test how many hits we get for all possible random numbers
+        let hits = (0..=0xff)
+            .filter(|_| m.hits(&mut rng, Modifier::Min3, Modifier::Plus1))
+            .count();
+
+        // Should hit 255 * (2 / 5) / (3 / 2) = 68 times
+        assert_eq!(68, hits);
     }
 }
