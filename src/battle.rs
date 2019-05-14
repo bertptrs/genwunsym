@@ -1,6 +1,6 @@
-use crate::pokemon::Pokemon;
-use crate::stats::{StatSet, Modifier, Stat};
 use crate::battle::Condition::Poisoned;
+use crate::pokemon::Pokemon;
+use crate::stats::{Modifier, Stat, StatSet};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum Condition {
@@ -54,7 +54,7 @@ impl<'a> BattleState<'a> {
             nv_state.pokemon.get_stat(Stat::Attack),
             nv_state.pokemon.get_stat(Stat::Defense),
             nv_state.pokemon.get_stat(Stat::Special),
-            nv_state.pokemon.get_stat(Stat::Speed)
+            nv_state.pokemon.get_stat(Stat::Speed),
         ];
 
         BattleState {
