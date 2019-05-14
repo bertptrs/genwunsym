@@ -2,7 +2,7 @@ use std::ops::Add;
 
 use num::rational::Ratio;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Ord, PartialOrd, Eq, PartialEq)]
 pub enum Stat {
     HP,
     Attack,
@@ -32,8 +32,10 @@ impl From<Stat> for usize {
 /// Container for values for all stats.
 pub type StatSet = [u16; 5];
 
-const PERFECT_IVS: StatSet = [0xf; 5];
-const PERFECT_EVS: StatSet = [0xffff; 5];
+/// Maximum attainable individual values.
+pub const PERFECT_IVS: StatSet = [0xf; 5];
+/// Maximum attainable effort values.
+pub const PERFECT_EVS: StatSet = [0xffff; 5];
 
 /// Stat boost modifier.
 ///
