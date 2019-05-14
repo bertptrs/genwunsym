@@ -41,12 +41,12 @@ impl Move {
 
     pub fn hits(&self, rand: &mut impl Rng, accuracy: Modifier, evasion: Modifier) -> bool {
         if let Some(acc) = self.accuracy {
-            let acc = Ratio::from_integer(acc.get() as u16);
+            let acc = Ratio::from_integer(u16::from(acc.get()));
             let acc = acc * accuracy.get_ratio();
             let acc = acc.trunc() / evasion.get_ratio();
             let r: u8 = rand.gen();
 
-            acc.to_integer() > r as u16
+            acc.to_integer() > u16::from(r)
         } else {
             true
         }

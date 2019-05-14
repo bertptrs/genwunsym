@@ -23,10 +23,17 @@ impl From<Stat> for usize {
             Defense => 2,
             Special => 3,
             Speed => 4,
-            Accuracy | Evasion => 5,
+            Accuracy => 5,
+            Evasion => 6
         }
     }
 }
+
+/// Container for values for all stats.
+pub type StatSet = [u16; 5];
+
+const PERFECT_IVS: StatSet = [0xf; 5];
+const PERFECT_EVS: StatSet = [0xffff; 5];
 
 /// Stat boost modifier.
 ///
@@ -51,7 +58,7 @@ pub enum Modifier {
 
 impl Modifier {
     pub fn modify(self, stat: u8) -> u16 {
-        let stat = Ratio::from_integer(stat as u16);
+        let stat = Ratio::from_integer(u16::from(stat));
 
         let multiplier = self.get_ratio();
         let result = stat * multiplier;
@@ -80,6 +87,12 @@ impl Modifier {
                 Ratio::new(rank as u16 + 2, 2)
             }
         }
+    }
+}
+
+impl Default for Modifier {
+    fn default() -> Self {
+        Modifier::Neutral
     }
 }
 
