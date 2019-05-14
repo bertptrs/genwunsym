@@ -3,7 +3,7 @@ use std::num::NonZeroU8;
 use num::rational::Ratio;
 use rand::Rng;
 
-use crate::stats::{Modifier, StatSet};
+use crate::stats::Modifier;
 use crate::types::Type;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
