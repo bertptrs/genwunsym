@@ -1,6 +1,6 @@
 use std::mem::size_of;
 
-use num_traits::{FromPrimitive, PrimInt};
+use num::{FromPrimitive, PrimInt};
 
 /// Trait to provide an integer square root of a number.
 pub trait IntegerSquareRoot {

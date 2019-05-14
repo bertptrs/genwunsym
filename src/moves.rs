@@ -1,7 +1,9 @@
 use std::num::NonZeroU8;
 
+use num::rational::Ratio;
 use rand::Rng;
 
+use crate::stats::Modifier;
 use crate::types::Type;
 
 #[derive(Copy, Clone, Debug)]
@@ -40,10 +42,14 @@ impl Move {
         &STRUGGLE
     }
 
-    pub fn hits(&self, rand: &mut impl Rng) -> bool {
+    pub fn hits(&self, rand: &mut impl Rng, accuracy: Modifier, evasion: Modifier) -> bool {
         if let Some(acc) = self.accuracy {
-            let r = rand.gen();
-            acc.get() > r
+            let acc = Ratio::from_integer(acc.get() as u16);
+            let acc = acc * accuracy.get_ratio();
+            let acc = acc.trunc() / evasion.get_ratio();
+            let r: u8 = rand.gen();
+
+            acc.to_integer() > r as u16
         } else {
             true
         }
@@ -61,8 +67,11 @@ mod tests {
         let m = Move::fallback();
         let mut rng = StepRng::new(254, 1);
         // First one struggle should hit.
-        assert_eq!(true, m.hits(&mut rng));
+        assert_eq!(true, m.hits(&mut rng, Modifier::Neutral, Modifier::Neutral));
         // Second should be affected by the 1/256 glitch.
-        assert_eq!(false, m.hits(&mut rng));
+        assert_eq!(
+            false,
+            m.hits(&mut rng, Modifier::Neutral, Modifier::Neutral)
+        );
     }
 }
