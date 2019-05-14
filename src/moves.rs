@@ -21,7 +21,6 @@ const STRUGGLE: Move = Move {
         divider: unsafe { NonZeroU8::new_unchecked(2) },
     },
     move_type: Type::Normal,
-    pp: 0,
 };
 
 /// A move a pokemon could use.
@@ -30,8 +29,6 @@ pub struct Move {
     accuracy: Option<NonZeroU8>,
     effect: MoveEffect,
     move_type: Type,
-    /// Initial PP that a move would have. 0 means infinite.
-    pp: u8,
 }
 
 impl Move {

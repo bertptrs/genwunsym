@@ -2,6 +2,32 @@ use std::ops::Add;
 
 use num::rational::Ratio;
 
+#[derive(Copy, Clone, Debug)]
+pub enum Stat {
+    HP,
+    Attack,
+    Defense,
+    Special,
+    Speed,
+    Accuracy,
+    Evasion,
+}
+
+impl From<Stat> for usize {
+    fn from(stat: Stat) -> Self {
+        use self::Stat::*;
+
+        match stat {
+            HP => 0,
+            Attack => 1,
+            Defense => 2,
+            Special => 3,
+            Speed => 4,
+            Accuracy | Evasion => 5,
+        }
+    }
+}
+
 /// Stat boost modifier.
 ///
 /// Represents any of the 13 levels of stat boost; 6 levels in either
