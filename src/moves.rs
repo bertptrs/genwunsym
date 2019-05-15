@@ -13,8 +13,10 @@ pub enum MoveEffect {
     Normal,
     /// Move with recoil. Divider is the fraction of the damage that will be dealt as recoil.
     Recoil(NonZeroU8),
-    // Explosion or self-destruct
+    /// Explosion or self-destruct
     SelfKO,
+    /// High critical hit ratio
+    HighCrit,
 }
 
 const STRUGGLE: Move = Move {
@@ -101,11 +103,31 @@ impl Move {
 
         (damage / 255) as u16
     }
+
+    /// Check if this move is a critical hit.
+    ///
+    /// This function implement the gen one (RBY, not stadium) algorithm for determining critical
+    /// hits. As such, it is inherently random.
+    pub fn is_critical(&self, rand: &mut impl Rng, attacker: &BattleState) -> bool {
+        // Not implemented: dire hit/focus energy since they are bugged anyway.
+        let base_speed = attacker.pokemon().base_stats[usize::from(Stat::Speed)];
+        let mut t = base_speed / 2;
+        if self.effect == MoveEffect::HighCrit {
+            t *= 4;
+        }
+        let t = t.min(255) as u8;
+        let r: u8 = rand.gen();
+
+        r < t
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use rand::rngs::mock::StepRng;
+
+    use crate::pokemon::Pokemon;
+    use crate::stats::{PERFECT_EVS, PERFECT_IVS};
 
     use super::*;
 
@@ -128,5 +150,24 @@ mod tests {
 
         // Should hit 255 * (2 / 5) / (3 / 2) = 68 times
         assert_eq!(68, hits);
+    }
+
+    #[test]
+    fn is_crit() {
+        let m = Move::fallback();
+        let mut rng = StepRng::new(0, 1);
+        let mew = Pokemon {
+            level: 100,
+            base_stats: [100; 5],
+            evs: PERFECT_EVS,
+            ivs: PERFECT_IVS,
+        };
+        let state = BattleState::new(&mew);
+
+        let hits = (0..=0xff)
+            .filter(|_| m.is_critical(&mut rng, &state))
+            .count();
+        // Mew has a probability of 50/256 to hit a critical, so…
+        assert_eq!(50, hits);
     }
 }

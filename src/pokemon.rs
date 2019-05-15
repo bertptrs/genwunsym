@@ -4,9 +4,9 @@ use crate::utils::IntegerSquareRoot;
 #[derive(Debug)]
 pub struct Pokemon {
     pub level: u8,
-    base_stats: StatSet,
-    evs: StatSet,
-    ivs: StatSet,
+    pub base_stats: StatSet,
+    pub evs: StatSet,
+    pub ivs: StatSet,
 }
 
 impl Pokemon {
