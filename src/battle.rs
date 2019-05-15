@@ -1,4 +1,5 @@
-use crate::battle::Condition::Poisoned;
+use std::ops::Index;
+
 use crate::pokemon::Pokemon;
 use crate::stats::{Modifier, Stat, StatSet};
 
@@ -61,6 +62,21 @@ impl<'a> BattleState<'a> {
             nv_state,
             stats,
             modifiers: Default::default(),
+        }
+    }
+
+    pub fn pokemon(&self) -> &Pokemon {
+        self.nv_state.pokemon
+    }
+}
+
+impl<'a> Index<Stat> for BattleState<'a> {
+    type Output = u16;
+
+    fn index(&self, index: Stat) -> &Self::Output {
+        match index {
+            Stat::Accuracy | Stat::Evasion => unimplemented!(),
+            x => &self.stats[usize::from(x)],
         }
     }
 }

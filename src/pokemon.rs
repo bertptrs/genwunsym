@@ -3,7 +3,7 @@ use crate::utils::IntegerSquareRoot;
 
 #[derive(Debug)]
 pub struct Pokemon {
-    level: u8,
+    pub level: u8,
     base_stats: StatSet,
     evs: StatSet,
     ivs: StatSet,

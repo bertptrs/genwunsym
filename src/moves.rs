@@ -3,7 +3,8 @@ use std::num::NonZeroU8;
 use num::rational::Ratio;
 use rand::Rng;
 
-use crate::stats::Modifier;
+use crate::battle::BattleState;
+use crate::stats::{Modifier, Stat};
 use crate::types::Type;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -51,6 +52,54 @@ impl Move {
         } else {
             true
         }
+    }
+
+    /// Compute the damage for when the attacker hits the defender with this particular move.
+    pub fn damage(
+        &self,
+        rand: &mut impl Rng,
+        attacker: &BattleState,
+        defender: &BattleState,
+    ) -> u16 {
+        if self.power.is_none() {
+            return 0;
+        }
+
+        let power = u16::from(self.power.unwrap().get());
+        let (mut attack, mut defense) = if self.move_type.is_physical() {
+            (attacker[Stat::Attack], defender[Stat::Defense])
+        } else {
+            (attacker[Stat::Special], defender[Stat::Special])
+        };
+
+        // TODO: badge bonus
+        if self.effect == MoveEffect::SelfKO {
+            defense /= 2;
+        }
+
+        // Simultaneous reduction
+        if attack > 255 || defense > 255 {
+            attack /= 4;
+            attack &= 0xff;
+            defense /= 4;
+            defense &= 0xff;
+        }
+
+        // TODO: critical hits
+        let damage = power * attack.max(1) * (2 * u16::from(attacker.pokemon().level) / 5 + 2);
+        // TODO: light screen & reflect
+        let damage = damage / defense.max(1);
+        let damage = 2 + 997.min(damage / 50);
+
+        // TODO: same-type attack-bonus
+        // TODO: type effectiveness
+        // gen_range is open ended at the high end
+        let r: u32 = rand.gen_range(217, 256);
+
+        // Need to upgrade to 32bit since multiplying by r may overflow
+        let damage = u32::from(damage) * r;
+
+        (damage / 255) as u16
     }
 }
 
