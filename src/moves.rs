@@ -136,16 +136,16 @@ mod tests {
         let m = Move::fallback();
         let mut rng = StepRng::new(254, 1);
         // First one struggle should hit.
-        assert_eq!(true, m.hits(&mut rng, Modifier::Neutral, Modifier::Neutral));
+        assert_eq!(true, m.hits(&mut rng, Modifier::default(), Modifier::default()));
         // Second should be affected by the 1/256 glitch.
         assert_eq!(
             false,
-            m.hits(&mut rng, Modifier::Neutral, Modifier::Neutral)
+            m.hits(&mut rng, Modifier::default(), Modifier::default())
         );
 
         // Test how many hits we get for all possible random numbers
         let hits = (0..=0xff)
-            .filter(|_| m.hits(&mut rng, Modifier::Min3, Modifier::Plus1))
+            .filter(|_| m.hits(&mut rng, Modifier::from(-3), Modifier::from(1)))
             .count();
 
         // Should hit 255 * (2 / 5) / (3 / 2) = 68 times
