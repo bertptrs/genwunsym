@@ -88,12 +88,16 @@ impl Move {
         }
 
         // TODO: critical hits
-        let damage = power * attack.max(1) * (2 * u16::from(attacker.pokemon().level) / 5 + 2);
+        let mut damage = power * attack.max(1) * (2 * u16::from(attacker.pokemon().level) / 5 + 2);
         // TODO: light screen & reflect
-        let damage = damage / defense.max(1);
-        let damage = 2 + 997.min(damage / 50);
+        damage /=  defense.max(1);
+        damage = 2 + 997.min(damage / 50);
 
-        // TODO: same-type attack-bonus
+        // Same-Type Attack bonus
+        if attacker.pokemon().has_type(self.move_type) {
+            damage = damage * 3 / 2;
+        }
+
         // TODO: type effectiveness
         // gen_range is open ended at the high end
         let r: u32 = rand.gen_range(217, 256);
@@ -157,10 +161,8 @@ mod tests {
         let m = Move::fallback();
         let mut rng = StepRng::new(0, 1);
         let mew = Pokemon {
-            level: 100,
             base_stats: [100; 5],
-            evs: PERFECT_EVS,
-            ivs: PERFECT_IVS,
+            ..Default::default()
         };
         let state = BattleState::new(&mew);
 

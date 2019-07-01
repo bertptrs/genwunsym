@@ -1,4 +1,5 @@
-use crate::stats::{Stat, StatSet};
+use crate::stats::{PERFECT_EVS, PERFECT_IVS, Stat, StatSet};
+use crate::types::Type;
 use crate::utils::IntegerSquareRoot;
 
 #[derive(Debug)]
@@ -7,6 +8,7 @@ pub struct Pokemon {
     pub base_stats: StatSet,
     pub evs: StatSet,
     pub ivs: StatSet,
+    pub types: [Option<Type>; 2],
 }
 
 impl Pokemon {
@@ -35,6 +37,27 @@ impl Pokemon {
             }
         }
     }
+
+    /// Check if this pokemon has the wanted type.
+    pub fn has_type(&self, wanted: Type) -> bool {
+        self.types.iter().any(|&x| x == Some(wanted))
+    }
+}
+
+/// Generic pokemon stats.
+///
+/// The default pokemon has the base stats and type of Rattata, perfect IVs and EVs, and is
+/// at level 100. Override as needed.
+impl Default for Pokemon {
+    fn default() -> Self {
+        Pokemon {
+            level: 100,
+            base_stats: [30, 56, 35, 25, 72],
+            evs: PERFECT_EVS,
+            ivs: PERFECT_IVS,
+            types: [Some(Type::Normal), None],
+        }
+    }
 }
 
 #[cfg(test)]
@@ -46,13 +69,23 @@ mod tests {
     #[test]
     fn test_stat_calc() {
         let mew = Pokemon {
-            level: 100,
             base_stats: [100; 5],
-            evs: PERFECT_EVS,
-            ivs: PERFECT_IVS,
+            ..Default::default()
         };
 
         assert_eq!(403, mew.get_stat(Stat::HP));
         assert_eq!(298, mew.get_stat(Stat::Special));
+    }
+
+    #[test]
+    fn test_has_type() {
+        let pokemon = Pokemon {
+            types: [Some(Type::Normal), Some(Type::Fire)],
+            ..Default::default()
+        };
+
+        assert!(pokemon.has_type(Type::Normal));
+        assert!(pokemon.has_type(Type::Fire));
+        assert!(!pokemon.has_type(Type::Dragon));
     }
 }
