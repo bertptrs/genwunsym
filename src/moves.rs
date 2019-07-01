@@ -101,7 +101,6 @@ impl Move {
 
         damage = self.apply_type_effectiveness(defender.pokemon(), damage);
 
-        // TODO: type effectiveness
         // gen_range is open ended at the high end
         let r: u32 = rand.gen_range(217, 256);
 
