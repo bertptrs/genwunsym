@@ -6,6 +6,7 @@ use rand::Rng;
 use crate::battle::BattleState;
 use crate::stats::{Modifier, Stat};
 use crate::types::Type;
+use crate::pokemon::Pokemon;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum MoveEffect {
@@ -90,13 +91,15 @@ impl Move {
         // TODO: critical hits
         let mut damage = power * attack.max(1) * (2 * u16::from(attacker.pokemon().level) / 5 + 2);
         // TODO: light screen & reflect
-        damage /=  defense.max(1);
+        damage /= defense.max(1);
         damage = 2 + 997.min(damage / 50);
 
         // Same-Type Attack bonus
         if attacker.pokemon().has_type(self.move_type) {
             damage = damage * 3 / 2;
         }
+
+        damage = self.apply_type_effectiveness(defender.pokemon(), damage);
 
         // TODO: type effectiveness
         // gen_range is open ended at the high end
@@ -106,6 +109,15 @@ impl Move {
         let damage = u32::from(damage) * r;
 
         (damage / 255) as u16
+    }
+
+    fn apply_type_effectiveness(&self, defender: &Pokemon, damage: u16) -> u16 {
+        let mut damage = Ratio::from_integer(damage);
+        for defender_type in defender.get_types().iter().filter_map(|&x| x) {
+            damage *= self.move_type.effectiveness(defender_type).get_modifier();
+        }
+
+        damage.to_integer()
     }
 
     /// Check if this move is a critical hit.

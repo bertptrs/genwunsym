@@ -42,6 +42,10 @@ impl Pokemon {
     pub fn has_type(&self, wanted: Type) -> bool {
         self.types.iter().any(|&x| x == Some(wanted))
     }
+
+    pub fn get_types(&self) -> &[Option<Type>] {
+        &self.types
+    }
 }
 
 /// Generic pokemon stats.
