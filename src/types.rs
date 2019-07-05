@@ -35,7 +35,7 @@ pub enum Effectiveness {
 }
 
 impl Effectiveness {
-    pub fn get_modifier(self) -> Ratio<u16> {
+    pub fn get_modifier(self) -> Ratio<u32> {
         use self::Effectiveness::*;
 
         match self {

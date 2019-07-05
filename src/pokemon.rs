@@ -66,8 +66,6 @@ impl Default for Pokemon {
 
 #[cfg(test)]
 mod tests {
-    use crate::stats::{PERFECT_EVS, PERFECT_IVS};
-
     use super::*;
 
     #[test]

@@ -65,6 +65,23 @@ impl<'a> BattleState<'a> {
         }
     }
 
+    pub fn is_alive(&self) -> bool {
+        self.nv_state.hit_points > 0
+    }
+
+    pub fn damage(&mut self, damage: u16) -> u16 {
+        self.nv_state.hit_points = self.nv_state.hit_points.saturating_sub(damage);
+        self.nv_state.hit_points
+    }
+
+    pub fn get_modifier(&self, stat: Stat) -> Modifier {
+        self.modifiers[usize::from(stat)]
+    }
+
+    pub fn get_modifier_mut(&mut self, stat: Stat) -> &mut Modifier {
+        &mut self.modifiers[usize::from(stat)]
+    }
+
     pub fn pokemon(&self) -> &Pokemon {
         self.nv_state.pokemon
     }

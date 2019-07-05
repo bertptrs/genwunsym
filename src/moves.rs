@@ -68,7 +68,7 @@ impl Move {
             return 0;
         }
 
-        let power = u16::from(self.power.unwrap().get());
+        let power = u32::from(self.power.unwrap().get());
         let (mut attack, mut defense) = if self.move_type.is_physical() {
             (attacker[Stat::Attack], defender[Stat::Defense])
         } else {
@@ -88,10 +88,11 @@ impl Move {
             defense &= 0xff;
         }
 
+        let mut damage = power * u32::from(attack).max(1);
         // TODO: critical hits
-        let mut damage = power * attack.max(1) * (2 * u16::from(attacker.pokemon().level) / 5 + 2);
+        damage *= 2 * u32::from(attacker.pokemon().level / 5 + 2);
         // TODO: light screen & reflect
-        damage /= defense.max(1);
+        damage /= u32::from(defense).max(1);
         damage = 2 + 997.min(damage / 50);
 
         // Same-Type Attack bonus
@@ -110,7 +111,7 @@ impl Move {
         (damage / 255) as u16
     }
 
-    fn apply_type_effectiveness(&self, defender: &Pokemon, damage: u16) -> u16 {
+    fn apply_type_effectiveness(&self, defender: &Pokemon, damage: u32) -> u32 {
         let mut damage = Ratio::from_integer(damage);
         for defender_type in defender.get_types().iter().filter_map(|&x| x) {
             damage *= self.move_type.effectiveness(defender_type).get_modifier();
@@ -135,6 +136,13 @@ impl Move {
 
         r < t
     }
+
+    pub fn get_recoil(&self, damage: u16) -> Option<u16> {
+        match self.effect {
+            MoveEffect::Recoil(c) => Some((damage / u16::from(c.get())).max(1)),
+            _ => None
+        }
+    }
 }
 
 #[cfg(test)]
@@ -142,7 +150,6 @@ mod tests {
     use rand::rngs::mock::StepRng;
 
     use crate::pokemon::Pokemon;
-    use crate::stats::{PERFECT_EVS, PERFECT_IVS};
 
     use super::*;
 
