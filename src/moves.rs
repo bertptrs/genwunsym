@@ -105,10 +105,7 @@ impl Move {
         // gen_range is open ended at the high end
         let r: u32 = rand.gen_range(217, 256);
 
-        // Need to upgrade to 32bit since multiplying by r may overflow
-        let damage = u32::from(damage) * r;
-
-        (damage / 255) as u16
+        (damage * r / 255) as u16
     }
 
     fn apply_type_effectiveness(&self, defender: &Pokemon, damage: u32) -> u32 {

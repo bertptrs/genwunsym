@@ -70,10 +70,7 @@ impl Modifier {
             -2 => Ratio::new(1, 2),
             -1 => Ratio::new(66, 100),
             // Neutral and positive cases follow a nice pattern.
-            x => {
-                let rank: i8 = x.into();
-                Ratio::new(rank as u16 + 2, 2)
-            }
+            x => Ratio::new(x as u16 + 2, 2)
         }
     }
 }
